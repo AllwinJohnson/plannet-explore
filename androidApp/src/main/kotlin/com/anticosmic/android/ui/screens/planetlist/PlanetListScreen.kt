@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +57,15 @@ fun PlanetListScreen(
     onPlanetSelected: (String) -> Unit
 ) {
     val state by store.state.collectAsState()
-    val pagerState = rememberPagerState(pageCount = { state.planets.size })
+    val pagerState = rememberPagerState(
+        initialPage = state.selectedPageIndex,
+        pageCount = { state.planets.size }
+    )
+
+    // Sync pager index back to store
+    LaunchedEffect(pagerState.currentPage) {
+        store.processIntent(PlanetListIntent.UpdatePageIndex(pagerState.currentPage))
+    }
 
     LaunchedEffect(Unit) {
         store.effects.collect { effect ->
@@ -65,7 +76,7 @@ fun PlanetListScreen(
     }
 
     CosmicBackground {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
             Text(
                 text = "Explore The Universe",
                 style = MaterialTheme.typography.headlineLarge,
@@ -91,6 +102,7 @@ fun PlanetListScreen(
                         state = pagerState,
                         contentPadding = PaddingValues(horizontal = 64.dp),
                         pageSpacing = 16.dp,
+                        userScrollEnabled = true,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(450.dp)
@@ -105,6 +117,7 @@ fun PlanetListScreen(
                             planet = planet,
                             pageOffset = pageOffset,
                             onClick = {
+                                // Direct intent processing for better responsiveness
                                 store.processIntent(PlanetListIntent.OnPlanetSelected(planet.id))
                             }
                         )
@@ -162,7 +175,12 @@ fun PlanetItem(
             }
             .clip(Shapes.large)
             .background(Color.White) // Card base
-            .clickable { onClick() }
+            .clickable(
+                indication = null, // Remove ripple to avoid interference with gestures
+                interactionSource = remember { MutableInteractionSource() }
+            ) { 
+                onClick() 
+            }
     ) {
         // Background Gradient
         Box(

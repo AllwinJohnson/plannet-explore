@@ -1,0 +1,106 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+> Task :androidApp:preBuild UP-TO-DATE
+> Task :androidApp:preDebugBuild UP-TO-DATE
+> Task :androidApp:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :androidApp:checkKotlinGradlePluginConfigurationErrors
+> Task :shared:preBuild UP-TO-DATE
+> Task :shared:preDebugBuild UP-TO-DATE
+> Task :shared:writeDebugAarMetadata UP-TO-DATE
+> Task :androidApp:checkDebugAarMetadata UP-TO-DATE
+> Task :androidApp:generateDebugResValues UP-TO-DATE
+> Task :shared:generateDebugResValues UP-TO-DATE
+> Task :shared:generateDebugResources UP-TO-DATE
+> Task :shared:packageDebugResources UP-TO-DATE
+> Task :androidApp:mapDebugSourceSetPaths UP-TO-DATE
+> Task :androidApp:generateDebugResources UP-TO-DATE
+> Task :androidApp:mergeDebugResources UP-TO-DATE
+> Task :androidApp:packageDebugResources UP-TO-DATE
+> Task :androidApp:parseDebugLocalResources UP-TO-DATE
+> Task :androidApp:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :androidApp:extractDeepLinksDebug UP-TO-DATE
+> Task :shared:extractDeepLinksDebug UP-TO-DATE
+> Task :shared:processDebugManifest UP-TO-DATE
+> Task :androidApp:processDebugMainManifest UP-TO-DATE
+> Task :androidApp:processDebugManifest UP-TO-DATE
+> Task :androidApp:processDebugManifestForPackage UP-TO-DATE
+> Task :shared:compileDebugLibraryResources UP-TO-DATE
+> Task :shared:parseDebugLocalResources UP-TO-DATE
+> Task :shared:generateDebugRFile UP-TO-DATE
+> Task :androidApp:processDebugResources UP-TO-DATE
+> Task :shared:checkKotlinGradlePluginConfigurationErrors
+> Task :shared:compileDebugKotlinAndroid UP-TO-DATE
+> Task :shared:javaPreCompileDebug UP-TO-DATE
+> Task :shared:compileDebugJavaWithJavac NO-SOURCE
+> Task :shared:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :androidApp:javaPreCompileDebug UP-TO-DATE
+> Task :androidApp:mergeDebugShaders UP-TO-DATE
+> Task :androidApp:compileDebugShaders NO-SOURCE
+> Task :androidApp:generateDebugAssets UP-TO-DATE
+> Task :shared:mergeDebugShaders UP-TO-DATE
+> Task :shared:compileDebugShaders NO-SOURCE
+> Task :shared:generateDebugAssets UP-TO-DATE
+> Task :shared:packageDebugAssets UP-TO-DATE
+> Task :androidApp:mergeDebugAssets UP-TO-DATE
+> Task :androidApp:compressDebugAssets UP-TO-DATE
+> Task :shared:processDebugJavaRes UP-TO-DATE
+> Task :androidApp:checkDebugDuplicateClasses UP-TO-DATE
+> Task :androidApp:desugarDebugFileDependencies UP-TO-DATE
+> Task :androidApp:mergeExtDexDebug UP-TO-DATE
+> Task :shared:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :shared:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :androidApp:mergeDebugJniLibFolders UP-TO-DATE
+> Task :shared:mergeDebugJniLibFolders UP-TO-DATE
+> Task :shared:mergeDebugNativeLibs NO-SOURCE
+> Task :androidApp:mergeLibDexDebug UP-TO-DATE
+> Task :shared:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :androidApp:mergeDebugNativeLibs NO-SOURCE
+> Task :androidApp:stripDebugDebugSymbols NO-SOURCE
+> Task :androidApp:validateSigningDebug UP-TO-DATE
+> Task :androidApp:writeDebugAppMetadata UP-TO-DATE
+> Task :androidApp:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :shared:stripDebugDebugSymbols NO-SOURCE
+> Task :shared:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :shared:extractDebugAnnotations UP-TO-DATE
+> Task :shared:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :shared:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :shared:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :shared:prepareDebugArtProfile UP-TO-DATE
+> Task :shared:prepareLintJarForPublish UP-TO-DATE
+> Task :shared:mergeDebugJavaResource UP-TO-DATE
+> Task :shared:syncDebugLibJars UP-TO-DATE
+> Task :shared:bundleDebugAar UP-TO-DATE
+> Task :shared:assembleDebug UP-TO-DATE
+
+> Task :androidApp:compileDebugKotlin FAILED
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:78:53 No value passed for parameter 'pageOffset'
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:94:18 Unresolved reference: animateFloatAsState
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:96:25 Unresolved reference: tween
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:100:18 Unresolved reference: animateFloatAsState
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:102:25 Unresolved reference: tween
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:110:14 Unresolved reference: graphicsLayer
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:111:17 Unresolved reference: scaleX
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:112:17 Unresolved reference: scaleY
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:113:17 'this' is not defined in this context
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:113:22 Variable expected
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:114:17 Unresolved reference: shadowElevation
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:114:41 Unresolved reference: toPx
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:115:17 Unresolved reference: shape
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:116:17 Unresolved reference: clip
+e: file:///D:/work/plannet-explore/androidApp/src/main/kotlin/com/anticosmic/android/ui/screens/planetlist/PlanetListScreen.kt:144:27 Unresolved reference: CircleShape
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':androidApp:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 30s
+55 actionable tasks: 3 executed, 52 up-to-date

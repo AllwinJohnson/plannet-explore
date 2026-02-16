@@ -29,6 +29,9 @@ class PlanetListStore(
     override fun processIntent(intent: PlanetListIntent) {
         when (intent) {
             is PlanetListIntent.LoadPlanets -> loadPlanets()
+            is PlanetListIntent.UpdatePageIndex -> {
+                _state.value = _state.value.copy(selectedPageIndex = intent.index)
+            }
             is PlanetListIntent.OnPlanetSelected -> onPlanetSelected(intent.planetId)
         }
     }
