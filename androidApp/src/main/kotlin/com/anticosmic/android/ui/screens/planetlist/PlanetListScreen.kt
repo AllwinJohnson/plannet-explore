@@ -1,9 +1,14 @@
 package com.anticosmic.android.ui.screens.planetlist
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,8 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import kotlin.math.absoluteValue
 import com.anticosmic.android.ui.components.CosmicBackground
 import com.anticosmic.android.ui.theme.CardGradientBottom
 import com.anticosmic.android.ui.theme.CardGradientTop
@@ -37,12 +44,14 @@ import com.anticosmic.presentation.planetlist.PlanetListEffect
 import com.anticosmic.presentation.planetlist.PlanetListIntent
 import com.anticosmic.presentation.planetlist.PlanetListStore
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlanetListScreen(
     store: PlanetListStore,
     onPlanetSelected: (String) -> Unit
 ) {
     val state by store.state.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { state.planets.size })
 
     LaunchedEffect(Unit) {
         store.effects.collect { effect ->
@@ -55,41 +64,98 @@ fun PlanetListScreen(
     CosmicBackground {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = "Solar System",
+                text = "Explore The Universe",
                 style = MaterialTheme.typography.headlineLarge,
                 color = White,
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier
+                    .padding(top = 48.dp, start = 24.dp, end = 24.dp)
+                    .align(Alignment.CenterHorizontally)
             )
+            
+            Spacer(modifier = Modifier.height(32.dp))
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = White)
                 }
             } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(state.planets) { planet ->
-                        PlanetItem(planet = planet, onClick = {
-                            store.processIntent(PlanetListIntent.OnPlanetSelected(planet.id))
-                        })
+                    HorizontalPager(
+                        state = pagerState,
+                        contentPadding = PaddingValues(horizontal = 64.dp),
+                        pageSpacing = 16.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp)
+                    ) { page ->
+                        val planet = state.planets[page]
+                        val pageOffset = (
+                            (pagerState.currentPage - page) + pagerState
+                                .currentPageOffsetFraction
+                        ).absoluteValue
+
+                        PlanetItem(
+                            planet = planet,
+                            pageOffset = pageOffset,
+                            onClick = {
+                                store.processIntent(PlanetListIntent.OnPlanetSelected(planet.id))
+                            }
+                        )
                     }
-                }
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    // Page Indicator
+                    Row(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        repeat(state.planets.size) { iteration ->
+                            val color = if (pagerState.currentPage == iteration) White else White.copy(alpha = 0.5f)
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(8.dp)
+                            )
+                        }
+                    }
             }
         }
     }
 }
 
 @Composable
-fun PlanetItem(planet: Planet, onClick: () -> Unit) {
+fun PlanetItem(
+    planet: Planet,
+    pageOffset: Float,
+    onClick: () -> Unit
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (pageOffset == 0f) 1f else 0.85f,
+        animationSpec = tween(durationMillis = 300),
+        label = "scale"
+    )
+    
+    val alpha by animateFloatAsState(
+        targetValue = if (pageOffset == 0f) 1f else 0.5f,
+        animationSpec = tween(durationMillis = 300),
+        label = "alpha"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.8f)
-            .clip(Shapes.medium)
+            .aspectRatio(0.7f)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                this.alpha = alpha
+            }
+            .clip(Shapes.large)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(CardGradientTop, CardGradientBottom)
@@ -105,16 +171,22 @@ fun PlanetItem(planet: Planet, onClick: () -> Unit) {
             // Placeholder for Image (Circle)
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.6f)
+                    .fillMaxWidth(0.8f)
                     .aspectRatio(1f)
-                    .clip(Shapes.large) // Circle-ish
+                    .clip(Shapes.extraLarge) // Circle-ish
                     .background(White.copy(alpha = 0.2f))
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = planet.name,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.displaySmall,
                 color = White
+            )
+            Text(
+                text = planet.description.take(50) + "...",
+                style = MaterialTheme.typography.bodySmall,
+                color = White.copy(alpha = 0.7f),
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
