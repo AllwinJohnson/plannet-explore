@@ -1,0 +1,20 @@
+# Gradle
+.gradle/
+build/
+*/build/
+gradle.properties.check
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Android
+local.properties
+.DS_Store
+
+# Wrapper
+!gradle/wrapper/gradle-wrapper.jar
