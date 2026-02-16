@@ -1,8 +1,10 @@
 package com.anticosmic.android.ui.screens.planetlist
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,9 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anticosmic.android.ui.components.CosmicBackground
 import com.anticosmic.android.ui.theme.CardGradientBottom
@@ -36,13 +45,16 @@ import com.anticosmic.domain.model.Planet
 import com.anticosmic.presentation.planetlist.PlanetListEffect
 import com.anticosmic.presentation.planetlist.PlanetListIntent
 import com.anticosmic.presentation.planetlist.PlanetListStore
+import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlanetListScreen(
     store: PlanetListStore,
     onPlanetSelected: (String) -> Unit
 ) {
     val state by store.state.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { state.planets.size })
 
     LaunchedEffect(Unit) {
         store.effects.collect { effect ->
@@ -55,27 +67,70 @@ fun PlanetListScreen(
     CosmicBackground {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = "Solar System",
+                text = "Explore The Universe",
                 style = MaterialTheme.typography.headlineLarge,
                 color = White,
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier
+                    .padding(top = 48.dp, start = 24.dp, end = 24.dp)
+                    .align(Alignment.CenterHorizontally)
             )
+            
+            Spacer(modifier = Modifier.height(32.dp))
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = White)
                 }
             } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    items(state.planets) { planet ->
-                        PlanetItem(planet = planet, onClick = {
-                            store.processIntent(PlanetListIntent.OnPlanetSelected(planet.id))
-                        })
+                    HorizontalPager(
+                        state = pagerState,
+                        contentPadding = PaddingValues(horizontal = 64.dp),
+                        pageSpacing = 16.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(450.dp)
+                    ) { page ->
+                        val planet = state.planets[page]
+                        val pageOffset = (
+                            (pagerState.currentPage - page) + pagerState
+                                .currentPageOffsetFraction
+                        ).absoluteValue
+
+                        PlanetItem(
+                            planet = planet,
+                            pageOffset = pageOffset,
+                            onClick = {
+                                store.processIntent(PlanetListIntent.OnPlanetSelected(planet.id))
+                            }
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(32.dp))
+                    
+                    // Page Indicator
+                    Row(
+                        modifier = Modifier
+                            .height(12.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        repeat(state.planets.size) { iteration ->
+                            val color = if (pagerState.currentPage == iteration) White else White.copy(alpha = 0.5f)
+                            val width = if (pagerState.currentPage == iteration) 24.dp else 8.dp
+                            Box(
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(width = width, height = 8.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -84,37 +139,96 @@ fun PlanetListScreen(
 }
 
 @Composable
-fun PlanetItem(planet: Planet, onClick: () -> Unit) {
+fun PlanetItem(
+    planet: Planet,
+    pageOffset: Float,
+    onClick: () -> Unit
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (pageOffset < 1f) 1f - (pageOffset * 0.15f) else 0.85f,
+        animationSpec = tween(durationMillis = 300),
+        label = "scale"
+    )
+    
+    val alpha by animateFloatAsState(
+        targetValue = if (pageOffset < 1f) 1f - (pageOffset * 0.5f) else 0.5f,
+        animationSpec = tween(durationMillis = 300),
+        label = "alpha"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.8f)
-            .clip(Shapes.medium)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(CardGradientTop, CardGradientBottom)
-                )
-            )
+            .aspectRatio(0.7f)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                this.alpha = alpha
+                shadowElevation = 12.dp.toPx()
+                shape = Shapes.large // 24dp from theme
+                clip = true
+            }
+            .clip(Shapes.large)
+            .background(Color.White) // Card base
             .clickable { onClick() }
-            .padding(16.dp)
     ) {
+        // Background Gradient
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(CardGradientTop, CardGradientBottom)
+                    )
+                )
+        )
+
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Placeholder for Image (Circle)
+            // Large Planet Image Placeholder with Glow
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.6f)
+                    .fillMaxWidth(0.9f)
                     .aspectRatio(1f)
-                    .clip(Shapes.large) // Circle-ish
-                    .background(White.copy(alpha = 0.2f))
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(White.copy(alpha = 0.3f), White.copy(alpha = 0.05f))
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                // Inner circle for "planet" look
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(0.8f)
+                        .clip(CircleShape)
+                        .background(White.copy(alpha = 0.15f))
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
             Text(
                 text = planet.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = White
+                style = MaterialTheme.typography.headlineMedium,
+                color = White,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Text(
+                text = planet.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = White.copy(alpha = 0.85f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
             )
         }
     }
