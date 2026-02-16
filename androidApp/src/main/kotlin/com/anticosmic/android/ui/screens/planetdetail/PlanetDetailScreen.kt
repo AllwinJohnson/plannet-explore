@@ -1,5 +1,6 @@
 package com.anticosmic.android.ui.screens.planetdetail
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,6 +66,10 @@ fun PlanetDetailScreen(
                 is PlanetDetailEffect.NavigateBack -> onBack()
             }
         }
+    }
+
+    BackHandler {
+        store.processIntent(PlanetDetailIntent.GoBack)
     }
 
     CosmicBackground {

@@ -105,7 +105,8 @@ fun AppContent(
                     onPlanetSelected = { id ->
                         selectedPlanetId = id
                         currentScreen = Screen.PlanetDetail
-                    }
+                    },
+                    onBack = { currentScreen = Screen.Explore }
                 )
             }
             Screen.PlanetDetail -> {

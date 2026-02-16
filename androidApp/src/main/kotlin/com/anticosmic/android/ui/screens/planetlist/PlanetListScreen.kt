@@ -1,5 +1,6 @@
 package com.anticosmic.android.ui.screens.planetlist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -54,7 +55,8 @@ import kotlin.math.absoluteValue
 @Composable
 fun PlanetListScreen(
     store: PlanetListStore,
-    onPlanetSelected: (String) -> Unit
+    onPlanetSelected: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     val state by store.state.collectAsState()
     val pagerState = rememberPagerState(
@@ -73,6 +75,11 @@ fun PlanetListScreen(
                 is PlanetListEffect.NavigateToDetails -> onPlanetSelected(effect.planetId)
             }
         }
+    }
+
+    // Handle system back button to go back to Explore
+    BackHandler {
+        onBack()
     }
 
     CosmicBackground {
