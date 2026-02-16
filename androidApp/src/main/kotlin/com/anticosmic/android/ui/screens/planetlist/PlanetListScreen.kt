@@ -144,17 +144,9 @@ fun PlanetItem(
     pageOffset: Float,
     onClick: () -> Unit
 ) {
-    val scale by animateFloatAsState(
-        targetValue = if (pageOffset < 1f) 1f - (pageOffset * 0.15f) else 0.85f,
-        animationSpec = tween(durationMillis = 300),
-        label = "scale"
-    )
-    
-    val alpha by animateFloatAsState(
-        targetValue = if (pageOffset < 1f) 1f - (pageOffset * 0.5f) else 0.5f,
-        animationSpec = tween(durationMillis = 300),
-        label = "alpha"
-    )
+    // Smooth interpolation based on offset
+    val scale = 1f - (pageOffset.coerceIn(0f, 1f) * 0.15f)
+    val alpha = 1f - (pageOffset.coerceIn(0f, 1f) * 0.5f)
 
     Box(
         modifier = Modifier
