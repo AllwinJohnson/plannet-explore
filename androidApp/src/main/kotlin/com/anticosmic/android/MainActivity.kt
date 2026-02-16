@@ -12,6 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.ui.Modifier
 import com.anticosmic.android.ui.screens.explore.ExploreScreen
 import com.anticosmic.android.ui.screens.planetdetail.PlanetDetailScreen
@@ -67,7 +74,22 @@ fun AppContent(
     val planetDetailStore = remember { PlanetDetailStore(coroutineScope, getPlanetDetailsUseCase) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when (currentScreen) {
+    AnimatedContent(
+        targetState = currentScreen,
+        transitionSpec = {
+            if (targetState > initialState) {
+                (slideInHorizontally { it } + fadeIn()) togetherWith 
+                (slideOutHorizontally { -it } + fadeOut())
+            } else {
+                (slideInHorizontally { -it } + fadeIn()) togetherWith 
+                (slideOutHorizontally { it } + fadeOut())
+            }.using(
+                SizeTransform(clip = false)
+            )
+        },
+        label = "screen_transition"
+    ) { screen ->
+        when (screen) {
             Screen.Explore -> {
                 ExploreScreen(
                     store = exploreStore,
@@ -94,5 +116,6 @@ fun AppContent(
                 }
             }
         }
+    }
     }
 }
